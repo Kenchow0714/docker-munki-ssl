@@ -1,6 +1,6 @@
 # Docker Munki SSL
 
-A container that uses Using self-signed client certificate to serves static files at http://munki/repo using nginx.
+A container with self-signed certificate to serves static files at http://munki/repo using nginx.
 Nginx expects the munki repo content to be located at /munki_repo. Use a data container and the --volumes-from option to add files.
 
 *WARNING* This is in development.
@@ -55,9 +55,36 @@ Run the container with --volumes-from and data container created and with port 4
 
     docker run -d --name munki-ssl --volumes-from munki-data -p 443:443 -h munki-ssl-proxy ustwo/munki-ssl`
 
+
+## Munki Client setup
+First we need to convert into two pem files as Munki doesn't liked the joined client.pem
+
+    openssl x509 -in client.crt -out client-munki.crt.pem -outform PEM
+    openssl rsa -in client.key -out client-munki.key.pem -outform PEM
+
+Transfer the certs to your client in my example I used scp to put them in /tmp/.
+
+    sudo mkdir -p /Library/Managed\ Installs/certs
+    sudo chmod 0700 /Library/Managed\ Installs/certs
+    sudo cp /tmp/client-munki.crt.pem /Library/Managed\ Installs/certs/client-munki.crt.pem
+    sudo cp /tmp/client-munki.key.pem /Library/Managed\ Installs/certs/client-munki.key.pem
+    sudo chmod 0600 /Library/Managed\ Installs/certs/client-munki.crt*
+    sudo chown root:wheel /Library/Managed\ Installs/certs/client-munki.crt*
+
+Change the ManagedInstalls.plist defaults:
+
+    sudo defaults write /Library/Preferences/ManagedInstalls SoftwareRepoURL "https://munki.example.com/repo"
+    sudo defaults write /Library/Preferences/ManagedInstalls ClientCertificatePath "/Library/Managed Installs/certs/client-munki.crt.pem"
+    sudo defaults write /Library/Preferences/ManagedInstalls ClientKeyPath "/Library/Managed Installs/certs/client-munki.key.pem"
+    sudo defaults write /Library/Preferences/ManagedInstalls UseClientCertificate -bool TRUE
+
+Test out the client:
+
+    sudo /usr/local/munki/managedsoftwareupdate -vvv --checkonly
+
 ## Maintainers
 
-* [Erik Aulin](mailto:erik@ustwo.com)
+* Erik Aulin (erik@ustwo.com)
 
 ## Sources
 
