@@ -1,25 +1,25 @@
-# Docker Munki SSL
+## Docker Munki SSL
 
 A container with self-signed certificate to serves static files at http://munki/repo using nginx.
 Nginx expects the munki repo content to be located at /munki_repo. Use a data container and the --volumes-from option to add files.
 
 *WARNING* This is in development.
 
-## Versions
+### Versions
 
 * 1.0, latest
 
-# Usage
+## Usage
 Creating Client Certs for Nginx:
 ---
-## Using self-signed certificate.
-### Create a Certificate Authority root (which represents this server)
+### Using self-signed certificate.
+#### Create a Certificate Authority root (which represents this server)
 Organization & Common Name: munkiclient
 
     openssl genrsa -des3 -out ca.key 4096
     openssl req -new -x509 -days 365 -key ca.key -out ca.crt
 
-### Create the Client Key and CSR
+#### Create the Client Key and CSR
 Organization & Common Name = munkiclient
 
     openssl genrsa -des3 -out client.key 4096
@@ -37,26 +37,26 @@ Combines `client.crt` and `client.key` into a single PEM file for programs using
 
     openssl pkcs12 -in client.p12 -out client.pem -clcerts
 
-### Install Client Key on client device (OS or browser)
+#### Install Client Key on client device (OS or browser)
 Use `client.p12`. Actual instructions vary.
 
-## Create the Server Key and CRT
+#### Create the Server Key and CRT
 Organization & Common Name = munki.example.com
 
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
 
-## Creating a Data Container:
+#### Creating a Data Container:
 Create a data-only container to host the Munki repo.
 
     docker run -d --name munki-data --entrypoint /bin/echo ustwo/munki-ssl Data-only container for munki-ssl`
 
-## Run the Munki container:
+#### Run the Munki container:
 Run the container with --volumes-from and data container created and with port 443.
 
     docker run -d --name munki-ssl --volumes-from munki-data -p 443:443 -h munki-ssl-proxy ustwo/munki-ssl`
 
 
-## Munki Client setup
+#### Munki Client setup
 First we need to convert into two pem files as Munki doesn't liked the joined client.pem
 
     openssl x509 -in client.crt -out client-munki.crt.pem -outform PEM
@@ -82,11 +82,11 @@ Test out the client:
 
     sudo /usr/local/munki/managedsoftwareupdate -vvv --checkonly
 
-## Maintainers
+### Maintainers
 
 * Erik Aulin (erik@ustwo.com)
 
-## Sources
+#### Sources
 
 * [afp548](https://www.afp548.com/2015/01/22/building-munki-with-docker)
 * [mtigas](https://gist.github.com/mtigas/952344)
