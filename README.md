@@ -68,8 +68,8 @@ Transfer the certs to your client in my example I used scp to put them in /tmp/.
     sudo chmod 0700 /Library/Managed\ Installs/certs
     sudo cp /tmp/client-munki.crt.pem /Library/Managed\ Installs/certs/client-munki.crt.pem
     sudo cp /tmp/client-munki.key.pem /Library/Managed\ Installs/certs/client-munki.key.pem
-    sudo chmod 0600 /Library/Managed\ Installs/certs/client-munki.crt*
-    sudo chown root:wheel /Library/Managed\ Installs/certs/client-munki.crt*
+    sudo chmod 0600 /Library/Managed\ Installs/certs/client-munki*
+    sudo chown root:wheel /Library/Managed\ Installs/certs/client-munki*
 
 Change the ManagedInstalls.plist defaults:
 
