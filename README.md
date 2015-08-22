@@ -48,12 +48,12 @@ Organization & Common Name = munki.example.com
 ## Creating a Data Container:
 Create a data-only container to host the Munki repo.
 
-    docker run -d --name munki-data --entrypoint /bin/echo ustwo/munki Data-only container for munki`
+    docker run -d --name munki-data --entrypoint /bin/echo ustwo/munki-ssl Data-only container for munki-ssl`
 
 ## Run the Munki container:
 Run the container with --volumes-from and data container created and with port 443.
 
-    docker run -d --name munki-ssl --volumes-from munki-data -p 443:443 -h munki-ssl-proxy erikaulin/munki-ssl`
+    docker run -d --name munki-ssl --volumes-from munki-data -p 443:443 -h munki-ssl-proxy ustwo/munki-ssl`
 
 ## Maintainers
 
